@@ -20,11 +20,11 @@ class PieChart @JvmOverloads constructor(
     private val rectF: RectF = RectF()
     private val paint: Paint = Paint()
 
-    var values: List<Segment>? = null
+    var values: List<Segment> = listOf()
         set(value) {
             field = value
 
-            val valuesSum = value!!.map { it.value }.sum()
+            val valuesSum = value.map { it.value }.sum()
 
             components = value.map {
                 Component(
@@ -70,7 +70,7 @@ class PieChart @JvmOverloads constructor(
 
         for (segment in components) {
             paint.color = segment.color ?: Color.BLUE
-            val sweep = (360 - (values!!.size) * pieMargins) * segment.value.toFloat()
+            val sweep = (360 - (values.size) * pieMargins) * segment.value.toFloat()
             canvas?.drawArc(rectF, start, sweep, true, paint)
             start += sweep + pieMargins
         }
