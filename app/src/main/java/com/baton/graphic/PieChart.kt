@@ -18,7 +18,10 @@ class PieChart @JvmOverloads constructor(
     var components: List<Component> = mutableListOf()
     private var pieMargins: Float = 0F
     private val rectF: RectF = RectF()
-    private val paint: Paint = Paint()
+    private val paint: Paint = Paint().apply {
+        style = Paint.Style.FILL
+        isAntiAlias = true
+    }
 
     var values: List<Segment> = listOf()
         set(value) {
@@ -35,26 +38,21 @@ class PieChart @JvmOverloads constructor(
         }
 
     init {
-        val a = attrs?.let {
+        attrs?.let {
             TintTypedArray.obtainStyledAttributes(
                 context,
                 attrs,
                 R.styleable.PieChart,
                 defStyleAttr,
                 defStyleAttr
-            )
-        }
-
-        try {
-            a?.let {
+            ).also {
                 pieMargins = it.getDimension(R.styleable.PieChart_segment_margin, 0F)
+                it.recycle()
             }
-        } finally {
-            a?.recycle()
         }
     }
 
-    override fun onDraw(canvas: Canvas?) {
+    override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         rectF.set(
             0F + paddingStart,
@@ -64,14 +62,12 @@ class PieChart @JvmOverloads constructor(
         )
 
         var start = 0F
-        paint.style = Paint.Style.FILL
-        paint.isAntiAlias = true
-        paint.strokeWidth = 1f
+
 
         for (segment in components) {
             paint.color = segment.color ?: Color.BLUE
             val sweep = (360 - (values.size) * pieMargins) * segment.value.toFloat()
-            canvas?.drawArc(rectF, start, sweep, true, paint)
+            canvas.drawArc(rectF, start, sweep, true, paint)
             start += sweep + pieMargins
         }
     }
